@@ -137,6 +137,7 @@ imprecision in exchange for simpler, more auditable logic.
 
 ## Project structure
 
+​```
 src/
   strategies/       (one file per algorithm, all implementing check())
     strategy.interface.js
@@ -176,3 +177,4 @@ test/
 docker-compose.yml
 package.json
 README.md
+​```
