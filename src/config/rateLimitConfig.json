@@ -1,0 +1,27 @@
+{
+  "/api/login": {
+    "strategy": "fixedWindow",
+    "limit": 5,
+    "windowMs": 60000
+  },
+  "/api/upload": {
+    "strategy": "tokenBucket",
+    "capacity": 20,
+    "refillRate": 2
+  },
+  "/api/payments": {
+    "strategy": "leakyBucket",
+    "capacity": 10,
+    "leakRate": 1
+  },
+  "/api/billing": {
+    "strategy": "slidingWindowLog",
+    "limit": 50,
+    "windowMs": 60000
+  },
+  "default": {
+    "strategy": "slidingWindowCounter",
+    "limit": 100,
+    "windowMs": 60000
+  }
+}
