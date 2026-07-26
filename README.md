@@ -49,10 +49,10 @@ Client Request
 ## Setup
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/sidd33/adaptive-rate-limiter.git
 cd adaptive-rate-limiter
 npm install
-docker-compose up -d      # starts Redis
+docker-compose up -d      
 node examples/express-app-demo/app.js
 ```
 
