@@ -114,8 +114,8 @@ Under sustained concurrency, Sliding Window Log occasionally allows one extra re
 past its configured limit (observed failure rate: ~1-2% in soak/mixed-traffic tests,
 0% in tests that didn't hit this strategy).
 
-**Root cause:** unlike Token Bucket and Leaky Bucket — which use a single atomic Lua
-script to read, compute, and write state in one indivisible step — Sliding Window Log
+**Root cause:** unlike Token Bucket and Leaky Bucket which uses a single atomic Lua
+script to read, compute, and write state in one indivisible step Sliding Window Log
 uses a Redis pipeline of two separate commands (prune expired entries, then count).
 Under high concurrency, two near-simultaneous requests can both read the count before
 either writes its own entry, letting both proceed as if each were the Nth request.
@@ -124,7 +124,7 @@ either writes its own entry, letting both proceed as if each were the Nth reques
 Converting Sliding Window Log to a Lua script (like the bucket algorithms) would close
 this gap, at the cost of losing the flexibility of Redis's native sorted-set operations
 for timestamp pruning. This is a common real-world tradeoff between full consistency
-and implementation simplicity — many production rate limiters accept small windows of
+and implementation simplicity many production rate limiters accept small windows of
 imprecision in exchange for simpler, more auditable logic.
 
 ## Tech stack
