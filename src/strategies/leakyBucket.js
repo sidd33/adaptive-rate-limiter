@@ -30,6 +30,9 @@ class LeakyBucketStrategy extends RateLimitStrategy{
             now
         );
 
+        const allowed = allowedRaw === 1;
+        const volume = parseInt(volumeRaw, 10);
+
         return {
             allowed,
             remaining: Math.max(0, capacity - volume),
