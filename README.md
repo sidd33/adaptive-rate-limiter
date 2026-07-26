@@ -14,28 +14,27 @@ single interface, with a config-driven router that picks the right one per route
 
 ## Architecture
 
-  Client Request
-         │
-         ▼
-┌─────────────────┐
-│ Express         │
-│ Middleware      │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Strategy Router │ ← reads rateLimitConfig.json, picks
-└────────┬────────┘   algorithm per-route
-         │
-         ▼
-┌───────────────────────────────────────────────┐
-│ Strategy Interface (check(key) → result)      │
-├───────────┬───────────┬───────────┬───────────┤
-│FixedWindow│TokenBucket│LeakyBucket│SlidingWin │
-└───────────┴───────────┴───────────┴───────────┘
-         │
-         ▼
-Redis (shared state, Lua scripts for atomicity)
+Client Request
+      |
+      v
++---------------------+
+|  Express Middleware   |
++----------+-----------+
+           |
+           v
++---------------------+
+|  Strategy Router       |  <- reads rateLimitConfig.json,
++----------+-----------+     picks algorithm per-route
+           |
+           v
++-----------------------------------------------+
+|  Strategy Interface (check(key) -> result)        |
++------------+------------+------------+-----------+
+| FixedWindow| TokenBucket| LeakyBucket| SlidingWin  |
++------------+------------+------------+-----------+
+           |
+           v
+   Redis (shared state, Lua scripts for atomicity)  
 
 ## Algorithms implemented
 
@@ -139,11 +138,41 @@ imprecision in exchange for simpler, more auditable logic.
 ## Project structure
 
 src/
-├── strategies/ # one file per algorithm, all implementing check()
-├── router/ # picks strategy based on route config
-├── middleware/ # Express integration
-├── store/ # Redis client + Lua scripts
-├── config/ # route → strategy mapping
-└── utils/ # headers, logging
-load-test/ # k6 scripts (multi-endpoint, spike, soak)
-examples/ # runnable demo app
+  strategies/       (one file per algorithm, all implementing check())
+    strategy.interface.js
+    fixedWindow.js
+    tokenBucket.js
+    leakyBucket.js
+    slidingWindowLog.js
+    slidingWindowCounter.js
+  router/
+    strategyRouter.js   (picks strategy based on route config)
+  middleware/
+    rateLimitMiddleware.js   (Express integration)
+  store/
+    redisClient.js
+    scripts/
+      tokenBucket.lua
+      leakyBucket.lua
+  config/
+    rateLimitConfig.json   (route -> strategy mapping)
+  utils/
+    headers.js
+    logger.js
+
+load-test/
+  multi-endpoint.js
+  spike-test.js
+  soak-test.js
+
+examples/
+  express-app-demo/
+    app.js
+
+test/
+  strategies/
+  integration/
+
+docker-compose.yml
+package.json
+README.md
